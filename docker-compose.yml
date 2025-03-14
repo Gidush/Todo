@@ -1,0 +1,44 @@
+services:
+  todo-postgres-db:
+    container_name: todo-postgres-db
+    image: postgres
+    environment:
+      - POSTGRES_USER=todo
+      - POSTGRES_PASSWORD=admin
+      - PGDATA=/data/postgres
+    volumes:
+      - db:/data/postgres
+    ports:
+      - "5433:5432"
+    networks:
+      - db
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d todo -U todo" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  migrator:
+    container_name: todo-migrator
+    build:
+      context: .
+      dockerfile: ./build/deploy/Dockerfile.migrator
+    environment:
+      - DB_USER=todo
+      - DB_PASSWORD=admin
+      - DB_NAME=todo
+      - DB_HOST=todo-postgres-db
+      - DB_PORT=5432
+    depends_on:
+      todo-postgres-db:
+        condition: service_healthy
+    networks:
+      - db
+
+networks:
+  db:
+    driver: bridge
+
+volumes:
+  db:

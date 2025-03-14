@@ -1,0 +1,146 @@
+basePath: /
+definitions:
+  api_model.TaskResponse:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      status:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  app.CreateRequest:
+    properties:
+      description:
+        type: string
+      title:
+        type: string
+    type: object
+  app.CreateResponse:
+    properties:
+      task:
+        $ref: '#/definitions/api_model.TaskResponse'
+    type: object
+  app.GetAllTasksResponse:
+    properties:
+      tasks:
+        items:
+          $ref: '#/definitions/api_model.TaskResponse'
+        type: array
+    type: object
+  app.UpdateRequest:
+    properties:
+      description:
+        type: string
+      status:
+        type: string
+      title:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API для управления задачами
+  title: Todo API
+  version: "1.0"
+paths:
+  /tasks:
+    get:
+      consumes:
+      - application/json
+      description: Возвращает список всех задач.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список задач
+          schema:
+            $ref: '#/definitions/app.GetAllTasksResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+      summary: Получить все задачи
+      tags:
+      - tasks
+    post:
+      consumes:
+      - application/json
+      description: Создает новую задачу с указанным заголовком и описанием.
+      parameters:
+      - description: Данные для создания задачи
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/app.CreateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Задача успешно создана
+          schema:
+            $ref: '#/definitions/app.CreateResponse'
+        "400":
+          description: Неверный формат запроса
+        "500":
+          description: Внутренняя ошибка сервера
+      summary: Создать новую задачу
+      tags:
+      - tasks
+  /tasks/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаляет задачу с указанным ID.
+      parameters:
+      - description: ID задачи
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Задача успешно удалена
+        "400":
+          description: Неверный формат ID задачи
+        "500":
+          description: Внутренняя ошибка сервера
+      summary: Удалить задачу
+      tags:
+      - tasks
+    put:
+      consumes:
+      - application/json
+      description: Обновляет задачу с указанным ID.
+      parameters:
+      - description: ID задачи
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Данные для обновления задачи
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/app.UpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Задача успешно обновлена
+        "400":
+          description: Неверный формат запроса
+        "500":
+          description: Внутренняя ошибка сервера
+      summary: Обновить задачу
+      tags:
+      - tasks
+swagger: "2.0"
