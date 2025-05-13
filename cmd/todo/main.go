@@ -37,7 +37,7 @@ func main() {
 	taskService := task.NewTaskService(strg)
 	service := app.New(taskService)
 
-	app := fiber.New(fiber.Config{Prefork: true})
+	app := fiber.New(fiber.Config{})
 
 	app.Get("/swagger/*", swagger.HandlerDefault)
 
